@@ -2,11 +2,6 @@
 This is a simple text editor program with very besic features like - save/unsave checking while exiting, set color on editor's background and many more.
 ***This program is created with Qt_5.10 framework you need atleast Qt_4 version on your machine to compile this project***
 
-
--------------for a while just run make file if this works then fine, you get your executable file.------------
-
-otherwise try this ---------->>>>>>>>
-
 compiling process --->>>
 
 ***make sure you have Qt framework before start compiling this project***
