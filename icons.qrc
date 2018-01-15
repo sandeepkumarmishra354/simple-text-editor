@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/file.ico</file>
+        <file>icons/main.ico</file>
+        <file>icons/open.png</file>
+        <file>icons/save.gif</file>
+        <file>icons/save.ico</file>
+        <file>icons/save_and_close.png</file>
+        <file>icons/build_run.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/music.jpeg</file>
+        <file>icons/music.png</file>
+        <file>icons/next.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>icons/previous.png</file>
+    </qresource>
+</RCC>
