@@ -38,7 +38,7 @@ EDITOR::EDITOR(QWidget *parent):QMainWindow(parent)
 
     tool_bar = addToolBar(tr("toolbar"));
     tool_bar->setMovable(false);
-    tool_bar->setFixedHeight(60);
+    tool_bar->setFixedHeight(65);
 
     search_text = new QLineEdit;
     search_text->setToolTip("enter text to search");
@@ -72,7 +72,7 @@ EDITOR::EDITOR(QWidget *parent):QMainWindow(parent)
     setCentralWidget(main_widget);
     setWindowIcon(QIcon(":/icons/main.ico"));
     setWindowTitle("Editor");
-
+    showMaximized();
     is_c = is_cpp = DO_NOT_COMPILE;
     is_py = DO_NOT_INTERPRET;
     new_file_create();
@@ -159,32 +159,39 @@ void EDITOR::create_action()
     connect(music_action, SIGNAL(triggered()), this, SLOT(play_music()));
     tool_bar->addAction(music_action);
 
+    /***** music stop action *****/
+    music_stop = new QAction("Shutdown Music");
+    music_stop->setIcon(QIcon(":/icons/music_stop.png"));
+    connect(music_stop, SIGNAL(triggered()), this, SLOT(stop_music()));
+    music_stop->setVisible(false);
+    tool_bar->addAction(music_stop);
+    tool_bar->addSeparator();
+
     /***** play pause action *****/
     play_pause_action = new QAction("play/pause");
     connect(play_pause_action, SIGNAL(triggered()), this, SLOT(play_pause()));
     play_pause_action->setIcon(QIcon(":/icons/pause.png"));
+    play_pause_action->setVisible(false);
 
     /***** next previous action *****/
-    next = new QAction("Next");
+    next = new QAction("Next Track");
     next->setIcon(QIcon(":/icons/next.png"));
     connect(next, SIGNAL(triggered()), this, SLOT(play_next()));
-    prev = new QAction("Previous");
+    next->setVisible(false);
+    prev = new QAction("Previous Track");
     connect(prev, SIGNAL(triggered()), this, SLOT(play_prev()));
     prev->setIcon(QIcon(":/icons/previous.png"));
+    prev->setVisible(false);
 
     tool_bar->addAction(prev);
     tool_bar->addAction(play_pause_action);
     tool_bar->addAction(next);
-
-    play_pause_action->setEnabled(false);
-    next->setEnabled(false);
-    prev->setEnabled(false);
 }
 
 void EDITOR::play_pause()
 {
     // checks if m_player is already initialised or not
-    if(m_player != nullptr)
+    if(m_player != NOT_INITIALISED)
     {
         if(!ply) // means pause icon is showing
         {
@@ -205,15 +212,16 @@ void EDITOR::play_music()
 {
     // collects all selected files
     QStringList playlist = QFileDialog::getOpenFileNames(this, "select one or multiple files",
-                                                         "/root/Music/Music", "*.mp3");
+                                                         "/root/Music", "*.mp3");
     if(!playlist.isEmpty())
     {
-        if(m_player == nullptr) // this means m_player is not initialised before
+        if(m_player == NOT_INITIALISED) // this means m_player is not initialised before
         {
             // enable all control buttons
-            play_pause_action->setEnabled(true);
-            next->setEnabled(true);
-            prev->setEnabled(true);
+            next->setVisible(true);
+            prev->setVisible(true);
+            play_pause_action->setVisible(true);
+            music_stop->setVisible(true);
             // initialise m_player
             m_player = new MUSIC(this);
             // get_layout function returns main widget container
@@ -223,6 +231,19 @@ void EDITOR::play_music()
         }
         else
             m_player->play_this(playlist);
+    }
+}
+
+void EDITOR::stop_music()
+{
+    if(m_player != NOT_INITIALISED)
+    {
+        delete m_player;
+        m_player = NOT_INITIALISED;
+        next->setVisible(false);
+        prev->setVisible(false);
+        play_pause_action->setVisible(false);
+        music_stop->setVisible(false);
     }
 }
 
@@ -698,10 +719,18 @@ void EDITOR::closeEvent(QCloseEvent *event)
 {
     // if there is some unsaved details
     // first save the detail and then exit
-    if(something_changed || create_new)
+    if(something_changed)
         quit_triggered();
+
     else// no unsaved details
+    {
+        if(m_player != NOT_INITIALISED)
+        {
+            delete m_player;
+            m_player = NOT_INITIALISED;
+        }
         event->accept();
+    }
 }
 
 void EDITOR::save_with_new_name()
@@ -902,8 +931,9 @@ EDITOR::~EDITOR()
     delete about_qt;
     delete about_this;
     delete music_action;
+    delete music_stop;
 
-    if(m_player != nullptr)
+    if(m_player != NOT_INITIALISED)
     {
         delete m_player;
     }
