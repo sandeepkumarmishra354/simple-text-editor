@@ -4,6 +4,7 @@
 #define DO_NOT_COMPILE 0
 #define COMPILE(file_to_compile,file_to_run) compiler(file_to_compile,file_to_run)
 #define DO_NOT_INTERPRET 0
+#define NOT_INITIALISED nullptr
 #define INTERPRET(file_to_interpret) interpreter(file_to_interpret)
 
 #include <QMainWindow>
@@ -27,7 +28,7 @@ class EDITOR:public QMainWindow
     Q_OBJECT
 
     private:
-        MUSIC *m_player = nullptr;
+        MUSIC *m_player = NOT_INITIALISED;
         QTextEdit *text_container;
         QTextEdit::ExtraSelection *line_highlight;
         QList<QTextEdit::ExtraSelection> *highlight;
@@ -37,7 +38,7 @@ class EDITOR:public QMainWindow
         QMenu *file_menu, *edit_menu, *build_menu;
         QAction *build_run_action; //*run_action;
         QToolBar *tool_bar;
-        QAction *music_action, *play_pause_action, *next, *prev;
+        QAction *music_action, *music_stop, *play_pause_action, *next, *prev;
         // menu for color choosing
         QMenu *set_color_subMenu;
         QMenu *red_color_subMenu,*pink_color_subMenu,*purple_color_subMenu,*blue_color_subMenu;
@@ -124,6 +125,7 @@ class EDITOR:public QMainWindow
         void set_default_color();
         // music slots
         void play_music();
+        void stop_music();
         void play_pause();
         void play_next();
         void play_prev();
