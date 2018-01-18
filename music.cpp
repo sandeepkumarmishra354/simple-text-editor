@@ -59,7 +59,6 @@ void MUSIC::set_cur_dur(qint64 dur)
 
 void MUSIC::set_song_name(QMediaContent con)
 {
-    //QString cur_song = con.canonicalUrl().fileName();
     song_name->setText(con.canonicalUrl().fileName());
 }
 
