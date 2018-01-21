@@ -36,6 +36,24 @@ void MUSIC::play_or_pause()
         main_player->play();
 }
 
+void MUSIC::set_repeat(REPEAT_VAL REP)
+{
+    switch (REP)
+    {
+        case REPEAT::ALL_TRACK:
+                playlist->setPlaybackMode(QMediaPlaylist::Loop);
+                break;
+
+        case REPEAT::CURRENT_TRACK:
+                playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+                break;
+
+        case REPEAT::NO_REPEAT:
+                playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+                break;
+    }
+}
+
 void MUSIC::set_total_dur(qint64 dur)
 {
     int total = dur/1000;
@@ -74,7 +92,6 @@ void MUSIC::play_this(QStringList list)
     {
         playlist->addMedia(QUrl::fromLocalFile(list[i]));
     }
-    playlist->setPlaybackMode(QMediaPlaylist::Loop);
     main_player->setPlaylist(playlist);
     main_player->play();
 }
