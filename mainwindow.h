@@ -38,7 +38,8 @@ class EDITOR:public QMainWindow
         QMenu *file_menu, *edit_menu, *build_menu;
         QAction *build_run_action; //*run_action;
         QToolBar *tool_bar;
-        QAction *music_action, *music_stop, *play_pause_action, *next, *prev;
+        QAction *music_action, *music_stop, *play_pause_action;
+        QAction *next, *prev, *repeat;
         // menu for color choosing
         QMenu *set_color_subMenu;
         QMenu *red_color_subMenu,*pink_color_subMenu,*purple_color_subMenu,*blue_color_subMenu;
@@ -72,6 +73,7 @@ class EDITOR:public QMainWindow
         char *content = nullptr;
         bool something_changed = false;
         bool create_new = false;
+        bool repeat_all, repeat_current, no_repeat;
 
         // private functions
         void create_action();
@@ -129,6 +131,7 @@ class EDITOR:public QMainWindow
         void play_pause();
         void play_next();
         void play_prev();
+        void set_repeat();
 
 };
 
