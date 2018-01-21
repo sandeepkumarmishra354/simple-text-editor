@@ -1,5 +1,7 @@
 #ifndef BUILD_OUTPUT_H
 #define BUILD_OUTPUT_H
+#define REPEAT_VAL short int
+
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -31,6 +33,13 @@ class MUSIC:public QMediaPlayer
         void play_or_pause();
         void play_next();
         void play_prev();
+
+        enum REPEAT
+        {
+            ALL_TRACK, CURRENT_TRACK, NO_REPEAT
+        };
+
+        void set_repeat(REPEAT_VAL);
 
     private slots:
         void set_total_dur(qint64);
