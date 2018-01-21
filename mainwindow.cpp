@@ -73,9 +73,11 @@ EDITOR::EDITOR(QWidget *parent):QMainWindow(parent)
     setWindowIcon(QIcon(":/icons/main.ico"));
     setWindowTitle("Editor");
     showMaximized();
+    new_file_create();
+
     is_c = is_cpp = DO_NOT_COMPILE;
     is_py = DO_NOT_INTERPRET;
-    new_file_create();
+    repeat_all = repeat_current = no_repeat = false;
 }
 
 void sig_handle(int sg)
@@ -167,6 +169,14 @@ void EDITOR::create_action()
     tool_bar->addAction(music_stop);
     tool_bar->addSeparator();
 
+    /***** repeat action *****/
+    repeat = new QAction("No Repeat");
+    repeat->setIcon(QIcon(":/icons/repeat.png"));
+    connect(repeat, SIGNAL(triggered()), this, SLOT(set_repeat()));
+    repeat->setVisible(false);
+    tool_bar->addAction(repeat);
+    tool_bar->addSeparator();
+
     /***** play pause action *****/
     play_pause_action = new QAction("play/pause");
     connect(play_pause_action, SIGNAL(triggered()), this, SLOT(play_pause()));
@@ -222,6 +232,7 @@ void EDITOR::play_music()
             prev->setVisible(true);
             play_pause_action->setVisible(true);
             music_stop->setVisible(true);
+            repeat->setVisible(true);
             // initialise m_player
             m_player = new MUSIC(this);
             // get_layout function returns main widget container
@@ -231,6 +242,46 @@ void EDITOR::play_music()
         }
         else
             m_player->play_this(playlist);
+    }
+}
+
+void EDITOR::set_repeat()
+{
+    // check that there is no repetition
+    // if so... then repeat current track
+    if(!repeat_all && !repeat_current && !no_repeat)
+    {
+        // set repetition of current playing track
+        m_player->set_repeat(m_player->REPEAT::CURRENT_TRACK);
+        repeat->setIcon(QIcon(":/icons/repeat_cur.png"));
+        repeat->setText("Repeat Current");
+        // means current track is repeating
+        repeat_current = true;
+    }
+    else
+    {
+        // current track is repeating
+        if(repeat_current)
+        {
+            // set repetition of all track
+            m_player->set_repeat(m_player->REPEAT::ALL_TRACK);
+            repeat->setIcon(QIcon(":/icons/repeat_all.png"));
+            repeat->setText("Repeat All");
+            // current track is not repeating
+            repeat_current = false;
+            // means all track is repeating
+            repeat_all = true;
+        }
+        // all track is repeating
+        else if(repeat_all)
+        {
+            // set no repetition
+            m_player->set_repeat(m_player->REPEAT::NO_REPEAT);
+            repeat->setIcon(QIcon(":/icons/repeat.png"));
+            repeat->setText("No Repeat");
+            // no repetition
+            repeat_all = false;
+        }
     }
 }
 
@@ -244,6 +295,7 @@ void EDITOR::stop_music()
         prev->setVisible(false);
         play_pause_action->setVisible(false);
         music_stop->setVisible(false);
+        repeat->setVisible(false);
     }
 }
 
@@ -932,10 +984,10 @@ EDITOR::~EDITOR()
     delete about_this;
     delete music_action;
     delete music_stop;
+    delete repeat;
 
     if(m_player != NOT_INITIALISED)
     {
         delete m_player;
     }
 }
-
